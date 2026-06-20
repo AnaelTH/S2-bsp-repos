@@ -1,0 +1,108 @@
+.errormessage {
+    float: right;
+    
+    color: red;
+}
+.successmessage {
+    color: rgb(102, 222, 16)
+}
+.inputrules {
+    clear: both;
+    color: #8AA3AA
+}
+fieldset {
+    border-style: none;
+}
+
+body {
+    justify-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+    margin-top: 0%;
+    background-color: #D0F1FF;
+}
+#pagetitle {
+    
+    font-size: 27px ;
+    text-shadow:  1.6px 1.5px 0.4px  #dddddd;
+}
+#topbar {
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    position: fixed;
+    background-color: white;
+    border-bottom-style: solid;
+    border-bottom-width: 4px;
+    border-bottom-color: #dddddd;
+    z-index: 2;
+}
+#body {
+    padding: 0px 10px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    
+    z-index: 1;
+    background-color: white;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    position: absolute;
+    top: 100px;
+    width: 380px;
+    
+    outline-style: dashed;
+    outline-color: rgb(153, 218, 231);
+    outline-width: 3px;
+}
+.bloctitle {
+    padding-bottom: 10px;
+    justify-self: center;
+    margin: 0% 0%;
+    font-weight: 500;
+}
+#body > * {
+    width: inherit;
+}
+#body > hr {
+    display: flex;
+    padding: 0px 0px;
+    border: 3.5px dashed #8AA3AA;
+    border-style: dashed none none none;
+}
+#body > form > fieldset {
+    gap: 10px;
+    padding: 2px 0px;
+    display: flex;
+    width: 360px;
+    justify-self: center;
+    flex-direction: column;
+    align-items: center;
+}
+#body >form >fieldset >div {
+    width: inherit;
+}
+#body > form > fieldset>  div > div {
+    float: left;
+}
+#body > form > fieldset> div > input {
+    color: #8AA3AA;
+    border-radius: 6px;
+    padding: 2px 4px;
+    border: 2px solid #8AA3AA;
+    justify-self: center;
+    display: block;
+    width: 348px;
+}
+#body > form > fieldset>  button {
+    margin-top: 18px;
+    margin-bottom: 15px;
+    border-style: none;
+    border-radius: 6px;
+    background-color: blue;
+    color: white;
+    font-size: 17px;
+    padding: 4px 40px;
+}

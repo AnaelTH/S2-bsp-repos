@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Study Group Management Tool - Homepage</title>      
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+        <link rel="stylesheet" href="/static/css/homepage.css">
+        <link rel="stylesheet" href="/static/css/common.css">
+        
+    </head>
+    <body>
+
+        <header id="topbar">
+            
+            <div style="height: inherit; overflow: hidden;display: flex; align-items: center; justify-content: left; column-gap: 10px;padding-left: 10px;">
+                <h1 id="pagetitle">Study Group Management Tool</h1>
+            </div>
+            <div style="display: flex;align-items: center; justify-content: right;column-gap: 12px;padding-right: 10px;">
+                <div id="profiletext" {%if not (user ) %} hidden {%endif%} >Profile</div>
+                <div id="profilebutton" {%if not (user ) %}style="display: none;"{%endif%} {%if not (user ) %} hidden {%endif%}  {%if not ((issues  and "edit" in issues) or (editsuccessmessage ))%} class="unclickedimage" {%else%} class="clickedimage" {% endif %} >
+                    <svg {%if not (user ) %} hidden {%endif%} tabindex="0" {%if  (user ) %}style="fill: {{user.StyleColor}}"{%endif%} id="profileimage" 
+                        width="40"
+                        height="40"
+                        viewBox="0 0 264.58334 264.58334"
+                        version="1.1">
+                        <path
+                            d="M 132.17075,0.09611817 C 59.904068,0.09610863 1.3203483,59.270958 1.3203329,132.26687 c 2.19e-5,72.9959 58.5837391,132.17075 130.8504171,132.17074 72.26667,10e-6 130.85039,-59.17485 130.85041,-132.17074 C 263.02114,59.270961 204.43742,0.09611259 132.17075,0.09611817 Z m 0,62.14814583 a 31.129679,31.4438 0 0 1 31.12988,31.44356 31.129679,31.4438 0 0 1 -31.12988,31.444076 31.129679,31.4438 0 0 1 -31.12989,-31.444076 31.129679,31.4438 0 0 1 31.12989,-31.44356 z m 0,93.458896 a 105.36501,106.42822 0 0 1 83.46777,41.49566 105.36501,106.42822 0 0 1 -83.46777,41.49618 105.36501,106.42822 0 0 1 -83.467778,-41.49618 105.36501,106.42822 0 0 1 83.467778,-41.49566 z"
+                            style="stroke-width:0.227067"
+                            id="path3" />
+                    </svg>
+                </div>
+
+                <a {%if user  %} hidden {%endif%} href="/auth"><button class="topbuttons" id  = "loginbutton" type="button">Sign In</button></a>
+                
+                <form  {%if not (user ) %} hidden {%endif%} name="logout" method="post" action="/auth/logout">
+                    <button class="topbuttons" id="logoutbutton">Log Out</button>
+                </form>
+                <button {%if not (user ) %} hidden {%endif%} {%if not ((issues  and "group" in issues) or ( groupsuccessmessage ))%} class="topbuttons" {%else%} class="topbuttons clickedgroupbutton" {%endif%} id="createbutton" >Create Group</button>
+            </div>
+            
+        </header>
+        <div id="body">
+            <div {%if not ( issues and "edit" in issues) %} hidden {% endif %} id="menucontainer">
+                <form  id="editprofileform" method="post" action="/users">
+                    <fieldset class="field" >
+                        <h2 class="bloctitle">Your Profile</h2>
+                        <div>
+                            <div class="fieldlabel">Username </div> <small class="errortext">{%if issues and "edit" in issues%}{{issues.edit.usernameerror}}{%endif%}</small><br>
+                                <small class="inputrules">Contains 6-20 characters among letters, numbers & '_'.</small><br>
+                                <input name="username" {%if user  %} minlength="6" maxlength="20" value="{{user.Username}}"{%endif%} pattern="^[a-zA-Z0-9._]{6,20}" >
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Email</div> <small class="errortext">{%if issues  and "edit" in issues%}{{issues.edit.emailerror}}{%endif%}</small><br>
+                                <small class="inputrules">Contains at least 3 characters, include '@'.</small><br>
+                                <input minlength="3" maxlength="50" name="email" {%if user  %}value="{{user.Email}}"{%endif%} pattern="^.{3,50}" type="email" >
+                        </div>
+
+                        <div>
+                            <div class="fieldlabel">Old password</div><small class="errortext">{%if issues  and "edit" in issues%}{{issues.edit.oldpassworderror}}{%endif%}</small><br>
+                                <input maxlength="64" name="old-password" pattern="^(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,64}" type="password" >
+                        </div>
+                        <div>
+                            <div class="fieldlabel">New password <small style="font-size: 12px" class="inputrules">(requires old password)</small></div> <small class="errortext">{%if issues  and "edit" in issues%}{{issues.edit.newpassworderror}}{%endif%}</small><br>
+                                <small class="inputrules" id="pwd-rules">Contains at least 8 characters, include a number & a symbol.</small><br>
+                                <input minlength="8" maxlength="64" name="new-password" pattern="^(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,64}" type="password" >
+                        </div>
+
+                        <div>
+                            <div class="fieldlabel">Formation</div> <small class="errortext">{%if issues  and "edit" in issues%}{{issues.edit.formationerror}}{%endif%}</small><br>
+                                <small class="inputrules">40 characters max</small><br>
+                                <input maxlength="40" name="formation" {%if user  %}value="{{user.Formation}}"{%endif%}  pattern="^.{0,40}">
+                        </div>
+
+                        <div>
+                            <div class="fieldlabel">Institution</div><small class="errortext">{%if issues  and "edit" in issues%}{{issues.edit.institutionerror}}{%endif%}</small><br>
+                                <small class="inputrules">40 characters max</small><br>
+                                <input maxlength="40" name="institution" {%if user  %}value="{{user.Institution}}"{%endif%} pattern="^.{0,40}">
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Style Color</div><br>
+                            <small class="inputrules">Choose a color </small><br>
+                                <select form="editprofileform" hidden name="stylecolor" id="profilestylecolor">
+                                    <option value="blue" {% if user  and user.StyleColor == "blue" %}selected{% endif %}>blue</option>
+                                    <option value="green" {% if user  and user.StyleColor == "green" %}selected{% endif %}>green</option>
+                                    <option value="red" {% if user  and user.StyleColor == "red" %}selected{% endif %}>red</option>
+                                    <option value="orange" {% if user  and user.StyleColor == "orange" %}selected{% endif %}>orange</option>
+                                    <option value="yellow" {% if user  and user.StyleColor == "yellow" %}selected{% endif %}>yellow</option>
+                                    <option value="pink" {% if user  and user.StyleColor == "pink" %}selected{% endif %}>pink</option>
+                                    <option value="cyan" {% if user  and user.StyleColor == "cyan" %}selected{% endif %}>cyan</option>
+                                    <option value="purple" {% if user  and user.StyleColor == "purple" %}selected{% endif %}>purple</option>
+                                </select>
+                            <div id="profilecolorlist">
+                                <button id="profilecontrolblue" value="blue" {% if user  and user.StyleColor == "blue" %} class="selectedcolor"{% endif %} style="background-color: blue;" id="basecolorchoice" type="button"></button>
+                                <button id="profilecontrolgreen" value="green" {% if user  and user.StyleColor == "green" %}class="selectedcolor"{% endif %}  style="background-color: green;" type="button"></button>
+                                <button id="profilecontrolred" value="red" {% if user  and user.StyleColor == "red" %}class="selectedcolor"{% endif %}  style="background-color: red;" type="button"></button>
+                                <button id="profilecontrolorange" value="orange" {% if user  and user.StyleColor == "orange" %}class="selectedcolor"{% endif %}  style="background-color: orange;" type="button"></button>
+                                <button id="profilecontrolyellow" value="yellow" {% if user  and user.StyleColor == "yellow" %}class="selectedcolor"{% endif %}  style="background-color: yellow;" type="button"></button>
+                                <button id="profilecontrolpink" value="pink" {% if user  and user.StyleColor == "pink" %}class="selectedcolor"{% endif %}  style="background-color: pink;" type="button"></button>
+                                <button id="profilecontrolcyan" value="cyan" {% if user  and user.StyleColor == "cyan" %}class="selectedcolor"{% endif %}  style="background-color: cyan;" type="button"></button>
+                                <button id="profilecontrolpurple" value="purple" {% if user  and user.StyleColor == "purple" %}class="selectedcolor"{% endif %}  style="background-color: purple;" type="button"></button>
+                            </div>
+                        </div>
+                        
+                        <div class="centeredfield">
+                            <button type="button" id="canceleditprofilebutton" class="cancelbutton">Cancel</button>
+                            <button class="editbutton">Save</button> 
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div id="indicators">
+                <div id="duetasks" class="whitebloc">
+                    <img class="redbox" src="/static/tickedbox.png"  height="69%">
+                    <div>
+                        <div class="greytext">Due Tasks</div>
+                        <div class="count">{{ group_data.DueTasks | length if group_data.DueTasks is defined else "--" }}</div>
+                    </div>
+                </div>
+                <div id="upcomingsessions" class="whitebloc">
+                    <img class="greenbox" src="/static/scheduleicon.png"  height="75%">
+                    <div>
+                        <div class="greytext">Upcoming Sessions</div>
+                        <div class="count">{{ group_data.UpcomingSessions | length if group_data.UpcomingSessions is defined else "--" }}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="dashboard">
+                <div id="searchbloc">
+                    <form id="searchform" action="/search" method="get">
+                        <div id="searchbar">
+                            <img src="/static/searchicon.png" height="70%">
+                            <input  id="searchinput" type="search" minlength="" maxlength="50" name="query" placeholder="Search groups by name, subject or description">
+                        </div>
+                        
+                        <select id="studylevelselect" name="StudyLevel">
+                            <option value="None">Study Level</option>
+                            <option value="High Shool">High School</option>
+                            <option value="Bachelor">Bachelor</option>
+                            <option value="Master">Master</option>
+                        </select>
+                        <select id="privacyselect" name="Privacy">
+                            <option value="None">Privacy</option>
+                            <option value="public">Public</option>
+                            <option value="private">Private</option>
+                        </select>
+                        
+                    </form>
+                    
+                    <div id="groupsearchbackground">
+                        <div style="padding: 10px 10px;position: absolute;">No results</div>
+                        <div style="position: relative ;" id="groupsearchlist">
+                            <div style="display: none;" id="searchelementref" class="searchelement">
+                                <div class="searchheader">
+                                    <svg viewbox="0 0 474 450" style="height: 100%;">
+                                        <path
+                                            d="m 197.36306,270.65128 c 29.27053,11.36983 58.94131,9.60672 87.65063,-2.69728 12.99973,-4.78026 31.38274,1.53427 43.33275,6.75824 20.76993,9.84077 35.73659,25.88956 44.05116,47.355 4.12845,11.92813 5.10406,23.01494 4.97941,35.5711 -0.0238,2.85639 3e-5,5.7098 0.028,8.5661 0.031,17.74304 0.031,17.74304 -5.00738,25.24338 -0.59624,0.89152 -1.19248,1.78304 -1.80679,2.70158 -6.54095,7.30301 -14.3108,13.41675 -24.39447,14.10094 -1.66347,0.0149 -3.32708,0.0178 -4.9906,0.0112 -0.91963,0.005 -1.83925,0.01 -2.78674,0.0151 -3.07975,0.0139 -6.15929,0.0121 -9.23908,0.0103 -2.20896,0.007 -4.41792,0.0141 -6.62688,0.0224 -6.00031,0.0195 -12.00055,0.0246 -18.00089,0.026 -3.74994,0.002 -7.49986,0.006 -11.24979,0.0121 -13.08578,0.0204 -26.17151,0.0294 -39.25731,0.0276 -12.19169,-0.001 -24.38317,0.0219 -36.57481,0.0567 -10.47146,0.0288 -20.94285,0.0406 -31.41435,0.0392 -6.25214,-5.6e-4 -12.5041,0.006 -18.7562,0.029 -5.88283,0.0213 -11.76528,0.0215 -17.64812,0.005 -2.15531,-0.002 -4.31065,0.003 -6.46592,0.0162 -2.95049,0.0171 -5.89971,0.007 -8.85018,-0.0102 -0.84581,0.0113 -1.69161,0.0226 -2.56304,0.0343 -9.78085,-0.12342 -18.95055,-4.77464 -25.88437,-11.59168 -8.021363,-10.44023 -9.20472,-20.82429 -9.085548,-33.65784 0.0075,-1.16089 0.01491,-2.32179 0.02259,-3.51786 0.360913,-27.50494 7.568678,-49.41709 26.696328,-69.80754 18.25487,-17.62898 49.58184,-29.46627 73.84163,-19.3197 z"
+                                            />
+                                        <path
+                                            d="m 286.39889,97.346085 c 17.63085,13.461575 29.63074,32.828975 32.78886,54.878975 2.19259,22.33188 -2.32233,43.87467 -16.44605,61.64151 -1.36611,1.56934 -2.74243,3.12986 -4.12979,4.68044 l -2.03049,2.71018 c -13.67369,16.10126 -35.91809,23.17742 -56.21255,25.12723 -22.18235,0.82893 -41.71063,-8.54802 -58.91413,-21.76317 l -1.78097,-1.66912 -2.20256,-2.20256 c -15.97067,-18.01491 -22.99981,-39.83033 -22.17077,-63.68329 0.98421,-16.22492 7.67365,-31.65307 17.76565,-44.24206 l 2.18965,-2.77471 C 203.50581,76.428313 251.25018,73.850701 286.39889,97.346085 Z"
+                                            />
+                                        <path
+                                            d="m 52.073804,243.6815 c 1.099893,-0.0141 2.199787,-0.0283 3.33301,-0.0428 1.179303,-0.008 2.358606,-0.0163 3.573645,-0.0246 1.229344,-0.009 2.458689,-0.0178 3.725286,-0.0269 2.603018,-0.0152 5.206058,-0.027 7.809106,-0.0357 2.642133,-0.0126 5.284237,-0.0351 7.926198,-0.0678 35.969191,-0.44403 35.969191,-0.44403 50.573871,11.40561 1.39811,2.40905 1.39811,2.40905 2.20256,4.40512 -0.82621,0.521 -1.65243,1.042 -2.50369,1.57878 -7.90479,5.10725 -14.98607,10.52356 -21.72445,17.14296 -0.91849,0.89152 -1.83698,1.78304 -2.78331,2.70158 -14.077914,14.49005 -22.080424,32.98671 -25.931947,52.66189 -0.192586,0.97888 -0.385171,1.95777 -0.583593,2.96631 -0.143775,0.73939 -0.28755,1.47878 -0.435682,2.24057 -7.483237,0.14043 -14.966131,0.23639 -22.450391,0.30247 -2.542176,0.0276 -5.084267,0.0651 -7.626142,0.11293 -3.668997,0.0673 -7.336833,0.0982 -11.006338,0.12233 -1.685291,0.0426 -1.685291,0.0426 -3.404629,0.0861 -9.075736,0.003 -16.493037,-2.34019 -23.1723322,-8.67695 -5.063515,-8.70925 -5.5467824,-16.468 -5.4553107,-26.35515 0.017621,-2.26219 1.521e-4,-4.52219 -0.020972,-6.78432 -0.026313,-15.56704 3.207724,-28.49001 14.0111959,-40.09559 9.029062,-8.45232 21.62291,-13.47791 33.943915,-13.61677 z"
+                                            />
+                                        <path
+                                            d="m 384.62352,243.65273 c 1.77226,-0.009 1.77226,-0.009 3.58033,-0.019 2.49737,-0.0104 4.99476,-0.0176 7.49215,-0.0219 3.78466,-0.0106 7.56866,-0.0448 11.35317,-0.0796 2.43629,-0.007 4.87259,-0.013 7.30888,-0.0172 1.11552,-0.0136 2.23104,-0.0272 3.38036,-0.0412 15.88154,0.0486 28.64035,4.4262 40.1933,15.28703 11.03795,11.75903 13.0823,25.61099 13.03144,41.22833 -10e-4,2.32551 0.045,4.64706 0.0936,6.97199 0.0913,10.46561 -1.25829,18.89409 -8.76722,26.60062 -7.9395,4.7259 -13.76338,5.48702 -22.91607,5.34723 -1.1624,-0.005 -2.32481,-0.009 -3.52244,-0.0142 -3.69156,-0.0184 -7.38245,-0.0599 -11.07381,-0.10198 -2.51156,-0.0166 -5.02314,-0.0316 -7.53472,-0.0452 -6.13829,-0.0363 -12.27618,-0.0915 -18.41416,-0.16132 -1.45274,-4.28857 -2.73767,-8.57522 -3.9053,-12.95025 -7.92675,-28.97227 -25.44598,-51.05935 -51.15866,-66.34184 1.93817,-5.81451 8.06635,-8.10788 13.21535,-11.01279 9.02841,-4.26854 17.84464,-4.58819 27.64383,-4.62882 z"
+                                            />
+                                        <path
+                                            d="m 426.08495,135.60693 c 10.84556,7.83946 18.48044,18.80559 20.88989,32.05755 1.65099,12.93272 -1.43143,25.91034 -8.9694,36.58741 -8.28767,10.34475 -20.19124,16.90553 -33.25777,18.56258 -12.53353,0.74378 -23.3052,-2.52382 -33.45135,-9.77385 -1.46505,-0.95399 -1.46505,-0.95399 -2.95969,-1.92724 -10.37462,-10.09423 -15.04437,-21.72278 -15.28025,-35.99806 0.10611,-13.73758 4.96638,-24.50244 14.4801,-34.36765 16.37656,-15.18483 39.74155,-16.68208 58.54847,-5.14074 z"
+                                            />
+                                        <path
+                                            d="m 103.05313,137.04376 c 9.44824,7.36934 15.67499,16.87113 18.25284,28.64186 0.9564,15.81982 -0.16101,28.39784 -11.01279,40.74732 -0.82835,1.00083 -0.82835,1.00083 -1.67343,2.02188 -8.00883,8.92468 -19.516166,13.69602 -31.364942,14.49731 C 63.097435,223.0931 51.485091,217.89065 40.912599,208.6355 31.415455,198.46843 27.04325,186.07735 27.353101,172.25027 c 1.09122,-10.33931 4.830376,-19.44532 11.35694,-27.48896 0.552231,-0.68851 1.104463,-1.37703 1.673428,-2.0864 16.220097,-18.11442 43.44819,-18.73795 62.669661,-5.63115 z"
+                                            />
+
+                                    </svg>
+                                    <div style=" height: 20px;display: flex; align-content: center ;margin-left: auto">
+                                        <div style="align-self: center;float: left ;font-size: 12px;">Level: </div><div class="StudyLevel">High School</div>
+                                        <a href=""><img style="display: block;float: right;justify-self: right;" src="/static/external-link.png" height="100%"></a>
+                                    </div>
+                                </div>
+                                <div class="searchtitle">
+                                    Name
+                                </div>
+                                <div class="searchsubject">
+                                    Description
+                                </div>
+                                <div class="searchdesc">
+                                    Description
+                                </div>
+                                <div class="searchfooter">
+                                    <img style=" float: left; margin-left: 6px;" src="/static/groupiconV2.png" height="100%">
+                                    <div class="membercount">--</div>
+                                    <div class="groupid">ID: ------- </div>
+                                    <div class="isprivate">private</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="statbloc">
+                    <div class="whitebloc">
+                        <h2 style="float: left;">Joined Groups</h2><a href="/home/overview"><button data-overviewtab="joinedgrouptab" type="button" class="viewallbutton">View all</button></a>
+                        <div id="grouplist">
+                            <div style="display: none;" id="groupelementref" class="groupelement" hidden>
+                                <svg viewbox="0 0 474 450" class="groupprofileimage" >
+                                        <path d="m 197.36306,270.65128 c 29.27053,11.36983 58.94131,9.60672 87.65063,-2.69728 12.99973,-4.78026 31.38274,1.53427 43.33275,6.75824 20.76993,9.84077 35.73659,25.88956 44.05116,47.355 4.12845,11.92813 5.10406,23.01494 4.97941,35.5711 -0.0238,2.85639 3e-5,5.7098 0.028,8.5661 0.031,17.74304 0.031,17.74304 -5.00738,25.24338 -0.59624,0.89152 -1.19248,1.78304 -1.80679,2.70158 -6.54095,7.30301 -14.3108,13.41675 -24.39447,14.10094 -1.66347,0.0149 -3.32708,0.0178 -4.9906,0.0112 -0.91963,0.005 -1.83925,0.01 -2.78674,0.0151 -3.07975,0.0139 -6.15929,0.0121 -9.23908,0.0103 -2.20896,0.007 -4.41792,0.0141 -6.62688,0.0224 -6.00031,0.0195 -12.00055,0.0246 -18.00089,0.026 -3.74994,0.002 -7.49986,0.006 -11.24979,0.0121 -13.08578,0.0204 -26.17151,0.0294 -39.25731,0.0276 -12.19169,-0.001 -24.38317,0.0219 -36.57481,0.0567 -10.47146,0.0288 -20.94285,0.0406 -31.41435,0.0392 -6.25214,-5.6e-4 -12.5041,0.006 -18.7562,0.029 -5.88283,0.0213 -11.76528,0.0215 -17.64812,0.005 -2.15531,-0.002 -4.31065,0.003 -6.46592,0.0162 -2.95049,0.0171 -5.89971,0.007 -8.85018,-0.0102 -0.84581,0.0113 -1.69161,0.0226 -2.56304,0.0343 -9.78085,-0.12342 -18.95055,-4.77464 -25.88437,-11.59168 -8.021363,-10.44023 -9.20472,-20.82429 -9.085548,-33.65784 0.0075,-1.16089 0.01491,-2.32179 0.02259,-3.51786 0.360913,-27.50494 7.568678,-49.41709 26.696328,-69.80754 18.25487,-17.62898 49.58184,-29.46627 73.84163,-19.3197 z"/>
+                                        <path d="m 286.39889,97.346085 c 17.63085,13.461575 29.63074,32.828975 32.78886,54.878975 2.19259,22.33188 -2.32233,43.87467 -16.44605,61.64151 -1.36611,1.56934 -2.74243,3.12986 -4.12979,4.68044 l -2.03049,2.71018 c -13.67369,16.10126 -35.91809,23.17742 -56.21255,25.12723 -22.18235,0.82893 -41.71063,-8.54802 -58.91413,-21.76317 l -1.78097,-1.66912 -2.20256,-2.20256 c -15.97067,-18.01491 -22.99981,-39.83033 -22.17077,-63.68329 0.98421,-16.22492 7.67365,-31.65307 17.76565,-44.24206 l 2.18965,-2.77471 C 203.50581,76.428313 251.25018,73.850701 286.39889,97.346085 Z"/>
+                                        <path d="m 52.073804,243.6815 c 1.099893,-0.0141 2.199787,-0.0283 3.33301,-0.0428 1.179303,-0.008 2.358606,-0.0163 3.573645,-0.0246 1.229344,-0.009 2.458689,-0.0178 3.725286,-0.0269 2.603018,-0.0152 5.206058,-0.027 7.809106,-0.0357 2.642133,-0.0126 5.284237,-0.0351 7.926198,-0.0678 35.969191,-0.44403 35.969191,-0.44403 50.573871,11.40561 1.39811,2.40905 1.39811,2.40905 2.20256,4.40512 -0.82621,0.521 -1.65243,1.042 -2.50369,1.57878 -7.90479,5.10725 -14.98607,10.52356 -21.72445,17.14296 -0.91849,0.89152 -1.83698,1.78304 -2.78331,2.70158 -14.077914,14.49005 -22.080424,32.98671 -25.931947,52.66189 -0.192586,0.97888 -0.385171,1.95777 -0.583593,2.96631 -0.143775,0.73939 -0.28755,1.47878 -0.435682,2.24057 -7.483237,0.14043 -14.966131,0.23639 -22.450391,0.30247 -2.542176,0.0276 -5.084267,0.0651 -7.626142,0.11293 -3.668997,0.0673 -7.336833,0.0982 -11.006338,0.12233 -1.685291,0.0426 -1.685291,0.0426 -3.404629,0.0861 -9.075736,0.003 -16.493037,-2.34019 -23.1723322,-8.67695 -5.063515,-8.70925 -5.5467824,-16.468 -5.4553107,-26.35515 0.017621,-2.26219 1.521e-4,-4.52219 -0.020972,-6.78432 -0.026313,-15.56704 3.207724,-28.49001 14.0111959,-40.09559 9.029062,-8.45232 21.62291,-13.47791 33.943915,-13.61677 z"/>
+                                        <path d="m 384.62352,243.65273 c 1.77226,-0.009 1.77226,-0.009 3.58033,-0.019 2.49737,-0.0104 4.99476,-0.0176 7.49215,-0.0219 3.78466,-0.0106 7.56866,-0.0448 11.35317,-0.0796 2.43629,-0.007 4.87259,-0.013 7.30888,-0.0172 1.11552,-0.0136 2.23104,-0.0272 3.38036,-0.0412 15.88154,0.0486 28.64035,4.4262 40.1933,15.28703 11.03795,11.75903 13.0823,25.61099 13.03144,41.22833 -10e-4,2.32551 0.045,4.64706 0.0936,6.97199 0.0913,10.46561 -1.25829,18.89409 -8.76722,26.60062 -7.9395,4.7259 -13.76338,5.48702 -22.91607,5.34723 -1.1624,-0.005 -2.32481,-0.009 -3.52244,-0.0142 -3.69156,-0.0184 -7.38245,-0.0599 -11.07381,-0.10198 -2.51156,-0.0166 -5.02314,-0.0316 -7.53472,-0.0452 -6.13829,-0.0363 -12.27618,-0.0915 -18.41416,-0.16132 -1.45274,-4.28857 -2.73767,-8.57522 -3.9053,-12.95025 -7.92675,-28.97227 -25.44598,-51.05935 -51.15866,-66.34184 1.93817,-5.81451 8.06635,-8.10788 13.21535,-11.01279 9.02841,-4.26854 17.84464,-4.58819 27.64383,-4.62882 z"/>
+                                        <path d="m 426.08495,135.60693 c 10.84556,7.83946 18.48044,18.80559 20.88989,32.05755 1.65099,12.93272 -1.43143,25.91034 -8.9694,36.58741 -8.28767,10.34475 -20.19124,16.90553 -33.25777,18.56258 -12.53353,0.74378 -23.3052,-2.52382 -33.45135,-9.77385 -1.46505,-0.95399 -1.46505,-0.95399 -2.95969,-1.92724 -10.37462,-10.09423 -15.04437,-21.72278 -15.28025,-35.99806 0.10611,-13.73758 4.96638,-24.50244 14.4801,-34.36765 16.37656,-15.18483 39.74155,-16.68208 58.54847,-5.14074 z"/>
+                                        <path d="m 103.05313,137.04376 c 9.44824,7.36934 15.67499,16.87113 18.25284,28.64186 0.9564,15.81982 -0.16101,28.39784 -11.01279,40.74732 -0.82835,1.00083 -0.82835,1.00083 -1.67343,2.02188 -8.00883,8.92468 -19.516166,13.69602 -31.364942,14.49731 C 63.097435,223.0931 51.485091,217.89065 40.912599,208.6355 31.415455,198.46843 27.04325,186.07735 27.353101,172.25027 c 1.09122,-10.33931 4.830376,-19.44532 11.35694,-27.48896 0.552231,-0.68851 1.104463,-1.37703 1.673428,-2.0864 16.220097,-18.11442 43.44819,-18.73795 62.669661,-5.63115 z"/>
+                                    </svg>
+                                <div class="grouplabel">placeholder text</div>
+                                <a href=""><img style="display: block;margin-left: 2%;" src="/static/external-link.png" height="100%"></a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="whitebloc">
+                        <h2 style="float: left;">Upcoming Sessions</h2><a href="/home/overview"><button data-overviewtab="sessiontab" type="button" class="viewallbutton">View all</button></a>
+                        <div id="sessionlist">
+                            <div style="display: none;" id="sessionelementref" class="sessionelement">
+                                <div class="detailline">
+                                    <div class="sessiontitle">Session Name</div>
+                                    <a href=""><img style="float: right;display: block;" src="/static/external-link.png" height="130%"></a>
+                                </div>
+                                <div class="detailline">
+                                    <img style="float: left;display: block;" height="100%" src="/static/scheduleiconV2.png"><div class="sessiondate">Date</div>
+                                </div>
+                                <div class="detailline">
+                                    <img style="float: left;display: block;" height="100%" src="/static/clock.png"><div class="sessiontime">Time</div>
+                                </div> 
+                                <div class="detailline">
+                                    <img style="float: left;display: block;" height="100%" src="/static/location.png"><div class="sessionlocation">Location</div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="whitebloc">
+                        <h2 style="float: left;">Due Tasks</h2><a href="/home/overview"><button data-overviewtab="tasktab" type="button" class="viewallbutton">View all</button></a>
+                        <div id="tasklist">
+                            <div style="display: none;" id="taskelementref" class="taskelement">
+                                <div class="detailline">
+                                    <div class="tasktitle">Task Name</div> 
+                                    <a href=""><img style="display: block;float: right;" src="/static/external-link.png" height="120%"></a>
+                                </div>
+                                <div class="detailline">
+                                    <img style="float: left;display: block;" height="100%" src="/static/clock.png"><div class="taskduedate">Due date</div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div  {%if not issues%} hidden {%endif%} id="curtain">
+        </div>
+        <div {%if not (issues and "group" in issues)%} hidden {% endif %} id="creategroupmenu">
+                <form  id="creategroupform" method="post" action="/groups">
+                    <fieldset class="field" >
+                        <h2 class="bloctitle">Create Study Group</h2>
+                        <div>
+                            <div class="fieldlabel">Group Name</div> <small class="errortext">{%if (issues  and "group" in issues )%}{{issues.group.nameerror}}{%endif%}</small><br>
+                                <small class="inputrules">6-30 characters</small><br>
+                                <input name="Name" minlength="6" maxlength="30" required {%if creategroup  %}value="{{creategroup.Name}}"{%endif%}  pattern="^[a-zA-Z0-9\.\+\*°_\(\)\-]{6,30}" >
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Subject</div> <small class="errortext">{%if (issues  and "group" in issues )%}{{issues.group.subjecterror}}{%endif%}</small><br>
+                                <small class="inputrules">30 characters max</small><br>
+                                <input name="Subject" maxlength="30" {%if creategroup  %}value="{{creategroup.Subject}}"{%endif%} pattern=".{0,30}">
+                        </div>
+                        
+                        <div>
+                            <div class="fieldlabel">Description</div> <small class="errortext">{%if (issues  and "group" in issues )%}{{issues.group.descriptionerror}}{%endif%}</small><br>
+                                <small class="inputrules">200 characters max</small><br>
+                                <textarea rows="4" maxlength="200" name="Description">{%if creategroup  %}{{creategroup.Description}}{%endif%}</textarea>
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Group Type</div><br><br>
+                                <input id="isprivatefield" style="display: none;" checked type="checkbox" name="IsPrivate" {%if creategroup  %}value="{{creategroup.IsPrivate}}"{%else%}value="1"{%endif%}>
+                                <button id="privatebutton" {%if creategroup %}{%if creategroup.IsPrivate %}class="selectedtype"{%else%}class="unselectedtype" {%endif%} {%else%}class="selectedtype"{%endif%} type="button">private</button>
+                                <button id="publicbutton" {%if creategroup %}{%if not (creategroup.IsPrivate) %}class="selectedtype"{%else%}class="unselectedtype" {%endif%} {%else%}class="unselectedtype"{%endif%} type="button">public</button>
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Study Level</div><br><br>
+                                <input id="studylevelfield" style="display: none;" checked type="checkbox" name="StudyLevel" {%if creategroup  %}value="{{creategroup.StudyLevel}}"{%else%}value="High School"{%endif%}>
+                                <button id="highschoolbutton" {%if creategroup and  creategroup.StudyLevel == "High School" %}class="selected"{%else %} {%if not group %} class="selected" {%endif%}{%endif%} type="button">high school</button>
+                                <button id="bachelorbutton" {%if creategroup and (creategroup.StudyLevel == "Bachelor") %}class="selected"{%endif%} type="button">bachelor</button>
+                                <button id="masterbutton" {%if creategroup and (creategroup.StudyLevel == "Master") %}class="selected"{%endif%} type="button">master</button>
+                        </div>
+                        <div>
+                            <div class="fieldlabel">Group Color</div><br>
+                            <small class="inputrules">Choose a color </small><br>
+                                <select  hidden name="StyleColor" id="groupstylecolor">
+                                    <option value="blue" {% if creategroup  and creategroup.StyleColor == "blue" %}selected{% endif %}>blue</option>
+                                    <option value="green" {% if creategroup  and creategroup.StyleColor == "green" %}selected{% endif %}>green</option>
+                                    <option value="red" {% if creategroup  and creategroup.StyleColor == "red" %}selected{% endif %}>red</option>
+                                    <option value="orange" {% if creategroup  and creategroup.StyleColor == "orange" %}selected{% endif %}>orange</option>
+                                    <option value="yellow" {% if creategroup  and creategroup.StyleColor == "yellow" %}selected{% endif %}>yellow</option>
+                                    <option value="pink" {% if creategroup  and creategroup.StyleColor == "pink" %}selected{% endif %}>pink</option>
+                                    <option value="cyan" {% if creategroup  and creategroup.StyleColor == "cyan" %}selected{% endif %}>cyan</option>
+                                    <option value="purple" {% if creategroup  and creategroup.StyleColor == "purple" %}selected{% endif %}>purple</option>
+                                </select>
+                            <div id="groupcolorlist">
+                                <button id="groupcontrolblue" value="blue" {% if creategroup  and creategroup.StyleColor == "blue" %} class="selectedcolor"{% endif %} style="background-color: blue;" id="basecolorchoice" type="button"></button>
+                                <button id="groupcontrolgreen" value="green" {% if creategroup  and creategroup.StyleColor == "green" %}class="selectedcolor"{% endif %}  style="background-color: green;" type="button"></button>
+                                <button id="groupcontrolred" value="red" {% if creategroup  and creategroup.StyleColor == "red" %}class="selectedcolor"{% endif %}  style="background-color: red;" type="button"></button>
+                                <button id="groupcontrolorange" value="orange" {% if creategroup  and creategroup.StyleColor == "orange" %}class="selectedcolor"{% endif %}  style="background-color: orange;" type="button"></button>
+                                <button id="groupcontrolyellow" value="yellow" {% if creategroup  and creategroup.StyleColor == "yellow" %}class="selectedcolor"{% endif %}  style="background-color: yellow;" type="button"></button>
+                                <button id="groupcontrolpink" value="pink" {% if creategroup  and creategroup.StyleColor == "pink" %}class="selectedcolor"{% endif %}  style="background-color: pink;" type="button"></button>
+                                <button id="groupcontrolcyan" value="cyan" {% if creategroup  and creategroup.StyleColor == "cyan" %}class="selectedcolor"{% endif %}  style="background-color: cyan;" type="button"></button>
+                                <button id="groupcontrolpurple" value="purple" {% if creategroup  and creategroup.StyleColor == "purple" %}class="selectedcolor"{% endif %}  style="background-color: purple;" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="centeredfield">
+                            <button type="button" id="cancelcreategroupbutton" class="cancelbutton">Cancel</button>
+                            <button class="createbutton">Create</button> 
+                    </div>
+                    </fieldset>
+                </form>
+        </div>
+        <div id="messagelist">
+            {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div  class="messagecontainer successmessage">
+                        
+                        <div>
+                            {{ message }}
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["error"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div  class="messagecontainer errormessage">
+                        
+                        <div>
+                            {{ message }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <script> let userGroupsData = {}; {% if group_data %} userGroupsData = {{group_data|tojson}} {%endif%} </script>
+        <script defer src="/static/scripts/homescript.js"></script>
+    </body>
+</html>

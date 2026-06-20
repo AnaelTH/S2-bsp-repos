@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Study Group Management Tool</title>      
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+        <link rel="stylesheet" href="/static/css/authpage.css">
+        <link rel="stylesheet" href="/static/css/common.css">
+        
+    </head>
+    <body>
+        <header id="topbar">
+           <div style="height: inherit; overflow: hidden;display: flex; align-items: center; justify-content: left;padding-left: 10px;">
+                <h1 id="pagetitle">Study Group Management Tool</h1>
+           </div>
+        </header>
+        <div id="body">
+            
+            <form id="LogInForm" action="/auth/login" method="post">
+                <fieldset>
+                    <h2 class="bloctitle">Login</h2>
+                    <div>
+                        <div>Username/email </div> <small class="errormessage">{{loginiderror}}</small> <br>
+                            <input maxlength="50" name="ID" value="{{loginusername}}" pattern="^[a-zA-Z0-9._%+-@]{3,50}$" required>
+                            
+                        
+                    </div>
+                    <div>
+                        <div>Password</div> <small class="errormessage">{{loginpassworderror}}</small> <br>
+                            <input maxlength="64" name="password" pattern="^(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,64}" type="password" required>
+                    </div>
+                    
+                    <button type="submit">Log In</button>
+                </fieldset>
+            </form>
+            <hr >
+            <form  id="signupform" action="/auth/signup" method="post">
+                <fieldset>
+                    <h2 class="bloctitle">Sign Up</h2>
+                    <div>
+                        <div>Username<small style="clear: none; color: #8AA3AA;" class="inputrules"> (Unique)</small></div> <small class="errormessage">{% if issues is defined %}{{issues.signupusernameerror}}{%endif%}</small> <br>
+                            <small class="inputrules">Contains 6-20 characters among letters, numbers & '_'.</small><br>
+                            <input maxlength="20" name="username" {%if user is defined %}value="{{user.username}}"{%endif%} pattern="^[a-zA-Z0-9._]{6,20}" required>
+                    </div>
+                    <div>
+                        <div>Email</div><small class="errormessage">{% if issues is defined %}{{issues.signupemailerror}}{%endif%}</small><br>
+                            <small class="inputrules">Contains at least 3 characters, include '@'.</small> <br>
+                            <input maxlength="50" name="email" placeholder="e.g. eric@gmail.com" {%if user is defined %}value="{{user.email}}"{%endif%} pattern="^.{3,50}" type="email" required>
+                    </div>
+                    <div>
+                        <div>Password </div><small class="errormessage">{% if issues is defined %}{{issues.signuppassworderror}}{%endif%}</small><br>
+                            <small class="inputrules" id="pwd-rules">Contains at least 8 characters, include a number & a symbol.</small><br>
+                            <input maxlength="64" aria-describedby="pwd-rules" name="password" pattern="^(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,64}" type="password" required>
+                    </div>
+                    
+                    <div>
+                        <div>Formation</div><small class="errormessage">{% if issues is defined %}{{issues.signupformationerror}}{%endif%}</small><br>
+                            <small class="inputrules">40 max characters</small><br>
+                            <input maxlength="40" name="formation" {%if user is defined %}value="{{user.formation}}"{%endif%} pattern="^.{0,40}" placeholder="e.g. Computer Science">
+                    </div>
+
+                    <div>
+                        <div>Institution</div><small class="errormessage">{% if issues is defined %}{{issues.signupinstitutionerror}}{%endif%}</small><br>
+                            <small class="inputrules">40 max characters</small><br>
+                            <input maxlength="40" name="institution" {%if user is defined %}value="{{user.institution}}"{%endif%} pattern="^.{0,40}" placeholder="e.g. Harvard University">
+                    </div>
+                    <button type="submit">Sign Up</button>
+                    <span class="successmessage">{{signupsuccessmessage}}</span>
+                </fieldset>
+            </form>
+        </div>
+        <div id="messagelist">
+            {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div  class="messagecontainer successmessage">
+                        
+                        <div>
+                            {{ message }}
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["error"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div  class="messagecontainer errormessage">
+                        
+                        <div>
+                            {{ message }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <script src="/static/scripts/authscript.js"></script>
+
+    </body>
+</html>
